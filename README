@@ -1,0 +1,35 @@
+README
+
+
+many noticed the weird behaviour of the PluginParameters array and the ParameterChanged/SetParameter function that turn into endless loop.
+
+After some tweaking, I discovered that ParameterChanged() have and undocumented property named "caller", that get a value of "null" if 
+ParameterChanged() is called from a change on the UI or from SetParameter(), and get as value the function from where it's triggered 
+if it's triggered from any function elsewhere in the code (excepted of course SetParameter() ).
+
+So I've done a little POC that show how to use this hidden property, to be able to use UI controls without looping, as well as linking
+this UI controls to external CC, and not getting in trouble when an external CC update a value of PluginParameters array and so refresh the UI... without looping.
+
+The POC contains many Trace() so you can check all this stuff.
+
+Just copy/paste the content of .js file into your MIDI Scripter.
+
+If you have to deal with other undocumented functions or objects, as the documentation is really crappy, this JS snippet may help you:
+
+var objs = Object.getOwnPropertyNames(TheObjectYouWantToTest);
+for(var i in objs ){
+  Trace(objs[i]);
+}
+or to know if a given property is a function:
+
+var functionNames = [];
+
+Object.getOwnPropertyNames(TheObjectYouWantToTest).forEach(function(property) {
+  if(typeof obj[property] === 'function') {
+    functionNames.push(property);
+  }
+});
+for(var i in functionNames )
+{ 
+   Trace(functionNames[i]);
+}

@@ -1,14 +1,13 @@
 README
 
 
-many noticed the weird behaviour of the PluginParameters array and the ParameterChanged/SetParameter function that turn into endless loop.
+If that turn into endless loop, it's cause of a misusing of ParameterChanged(), where normally you never had to call SetParameter or UpdatePluginParameters(). I've spend time on this because of misunderstanding how to use this callback function. But this solution works, 
+And maybe someone else will need to do things this way.
 
 After some tweaking, I discovered that ParameterChanged() have and undocumented property named "caller", that get a value of "null" if 
 ParameterChanged() is called from a change on the UI or from SetParameter(), and get as value the function from where it's triggered 
 if it's triggered from any function elsewhere in the code (excepted of course SetParameter() ).
 
-So I've done a little POC that show how to use this hidden property, to be able to use UI controls without looping, as well as linking
-this UI controls to external CC, and not getting in trouble when an external CC update a value of PluginParameters array and so refresh the UI... without looping.
 
 The POC contains many Trace() so you can check all this stuff.
 
